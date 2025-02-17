@@ -43,10 +43,11 @@ fun TaskItem(
 @Composable
 fun TaskList(
     tasks: List<Task>,
+    modifier: Modifier = Modifier,
     onTaskClicked: (Task) -> Unit,
     onTaskCheckedboxClicked: (Task, Boolean) -> Unit
 ) {
-    LazyColumn {
+    LazyColumn(modifier = modifier) {
         items(tasks) { task ->
             TaskItem(
                 task = task,

@@ -28,59 +28,68 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "1.8"
     }
+
     buildFeatures {
         compose = true
+    }
+
+    composeOptions {
+        // Check this version matches your Compose library versions
+        kotlinCompilerExtensionVersion = "1.4.7" // or 1.3.x / 1.4.x that aligns with your chosen BOM
     }
 }
 
 dependencies {
-
+    // Core Android + Kotlin
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+
+    // Compose BOM (manages versioning for multiple Compose libs)
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
+
+    // Core UI + Tooling
+    implementation(libs.androidx.ui)               // "androidx.compose.ui:ui"
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
+
+    // Material Design 3 (Primary Compose UI toolkit)
     implementation(libs.androidx.material3)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    implementation("androidx.compose.material3:material3:1.3.1")
+
+
+    // UI Testing
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // Room
+    // Room (database)
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")
-    // Kotlin Symbol Processing (KSP)
     ksp("androidx.room:room-compiler:$room_version")
-    // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$room_version")
-    // optional - Test helpers
     testImplementation("androidx.room:room-testing:$room_version")
 
-    // Jetpack Compose
-    val composeBom = platform("androidx.compose:compose-bom:2025.01.01")
-    implementation(composeBom)
-    androidTestImplementation(composeBom)
-    // Material Design 3
-    implementation("androidx.compose.material3:material3")
-    // UI Tests
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
-    // Optional - Integration with activities
-    implementation("androidx.activity:activity-compose:1.10.0")
-    // Optional - Integration with ViewModels
+    // ViewModel + LiveData
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
-    // Optional - Integration with LiveData
     implementation("androidx.compose.runtime:runtime-livedata")
+
+    // (Optional) If you prefer a certain version of material3 outside the BOM:
+    // implementation("androidx.compose.material3:material3:1.3.1")
+    // etc.
+
+    // Testing libraries
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }
