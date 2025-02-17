@@ -53,15 +53,16 @@ fun MainScreen(
                 Text("+")
             }
         }
-    ) { innerPadding ->
+    )
+    { innerPadding ->
         // Pass `innerPadding` to your content’s Modifier to respect insets
         TaskList(
             tasks = tasks,
             modifier = Modifier.padding(innerPadding),
             onTaskClicked = onTaskClicked,
             onTaskCheckedboxClicked = { task, isChecked ->
-                task.isCompleted = isChecked
-                taskViewModel.update(task)
+                // Create a new copy with the updated value instead of mutating the existing object.
+                taskViewModel.update(task.copy(isCompleted = isChecked))
             }
         )
     }
