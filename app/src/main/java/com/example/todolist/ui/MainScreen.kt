@@ -14,7 +14,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -35,8 +34,9 @@ fun MainScreen(
     // Collect the Flow from the ViewModel as State
     val tasks by taskViewModel.allTasks.collectAsState(initial = emptyList())
 
-    // State to show/hide the "Add Task" dialog
-    var showDialog by remember { mutableStateOf(false) }
+    // Use a sealed class state to control which dialog is visible
+    var dialogState by remember { mutableStateOf<TaskDialogState>(TaskDialogState.None) }
+
 
     Scaffold(
         // Material 3 uses `snackbarHost` instead of `scaffoldState`
@@ -47,9 +47,7 @@ fun MainScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { showDialog = true }
-            ) {
+            FloatingActionButton(onClick = { dialogState = TaskDialogState.Add }) {
                 Text("+")
             }
         }
@@ -63,20 +61,52 @@ fun MainScreen(
             onTaskCheckedboxClicked = { task, isChecked ->
                 // Create a new copy with the updated value instead of mutating the existing object.
                 taskViewModel.update(task.copy(isCompleted = isChecked))
+            },
+            onEditTaskClicked = { task ->
+                dialogState = TaskDialogState.Edit(task)
+            },
+            onDeleteTaskClicked = { task ->
+                dialogState = TaskDialogState.Delete(task)
             }
         )
     }
 
-    if (showDialog) {
-        AddTaskDialog(
-            onDismiss = { showDialog = false },
-            onAddTask = { title ->
-                if (title.isNotBlank()) {
-                    taskViewModel.insert(Task(title = title, isCompleted = false))
+    // Show the appropriate dialog based on the current dialog state
+    when (val state = dialogState) {
+        is TaskDialogState.Add -> {
+            AddTaskDialog(
+                onDismiss = { dialogState = TaskDialogState.None },
+                onAddTask = { title ->
+                    if (title.isNotBlank()) {
+                        taskViewModel.insert(Task(title = title, isCompleted = false))
+                    }
+                    dialogState = TaskDialogState.None
                 }
-                showDialog = false
-            }
-        )
+            )
+        }
+        is TaskDialogState.Edit -> {
+            EditTaskDialog(
+                task = state.task,
+                onDismiss = { dialogState = TaskDialogState.None },
+                onEditTask = { updatedTitle ->
+                    taskViewModel.update(state.task.copy(title = updatedTitle))
+                    dialogState = TaskDialogState.None
+                }
+            )
+        }
+        is TaskDialogState.Delete -> {
+            DeleteConfirmationDialog(
+                task = state.task,
+                onDismiss = { dialogState = TaskDialogState.None },
+                onConfirmDelete = {
+                    taskViewModel.delete(state.task)
+                    dialogState = TaskDialogState.None
+                }
+            )
+        }
+        TaskDialogState.None -> {
+            // No dialog to show
+        }
     }
 }
 
@@ -102,6 +132,60 @@ fun AddTaskDialog(
         confirmButton = {
             TextButton(onClick = { onAddTask(textState.text) }) {
                 Text("Add")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+@Composable
+fun EditTaskDialog(
+    task: Task,
+    onDismiss: () -> Unit,
+    onEditTask: (String) -> Unit
+) {
+    var textState by remember { mutableStateOf(TextFieldValue(task.title)) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Edit Task") },
+        text = {
+            OutlinedTextField(
+                value = textState,
+                onValueChange = { textState = it },
+                label = { Text("Task title") }
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = { onEditTask(textState.text) }) {
+                Text("Save")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+@Composable
+fun DeleteConfirmationDialog(
+    task: Task,
+    onDismiss: () -> Unit,
+    onConfirmDelete: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Delete Task") },
+        text = { Text("Are you sure you want to delete \"${task.title}\"?") },
+        confirmButton = {
+            TextButton(onClick = onConfirmDelete) {
+                Text("Delete")
             }
         },
         dismissButton = {
