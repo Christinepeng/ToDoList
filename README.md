@@ -1,37 +1,34 @@
-# ToDoList
+# 📌 To-Do List App (Jetpack Compose + Room)
 
-# Requirements
+A modern and minimal **To-Do List** app built using **Jetpack Compose**, **Room Database**, **Kotlin Coroutines**, and **Flow**. This app allows users to manage tasks efficiently with features such as task creation, editing, completion, and deletion.
 
-## Main Features
 
-### Display Task List
-- The app should show a list of tasks with a title and a completion status.
+---
 
-### Add New Task
-- Provide a UI component (e.g., a button) that allows the user to navigate to a new screen or open a dialog where they can enter a task title.
+## 🚀 Features
+✅ Add new tasks with a simple input dialog  
+✅ Edit existing tasks seamlessly  
+✅ Mark tasks as completed using a checkbox  
+✅ Delete tasks with a confirmation dialog  
+✅ Uses **Jetpack Compose** for a fully declarative UI  
+✅ **Room Database** with **Flow** for real-time updates  
+✅ Follows **MVVM architecture** for clean separation of concerns  
 
-### Mark Task as Completed
-- Allow users to mark tasks as completed by clicking a checkbox or tapping the task.
+---
 
-### Delete Task
-- Optionally, provide a way for users to delete tasks from the list.
+## 🛠️ Tech Stack
+- **Kotlin** - Modern, concise, and safe programming language
+- **Jetpack Compose** - Declarative UI toolkit for Android
+- **Room Database** - Local storage with SQLite and Flow
+- **Kotlin Coroutines & Flow** - Asynchronous programming
+- **Material 3** - Latest Material Design components for a modern UI
+- **MVVM Architecture** - Separation of UI, business logic, and data layers
 
-## Data Persistence
+---
 
-- Use local storage (for example, Room) to save tasks so that they persist between app launches.
+## 📸 Screenshots
+| Home Screen  | Add Task Dialog | Edit Task | Delete Task |
+|--------------|---------------|----------------|----------------|
+| ![Image](https://github.com/user-attachments/assets/66d0090d-10f0-4bae-873b-a225a73f22f1) | ![Image](https://github.com/user-attachments/assets/7c775732-3651-4735-a4a6-331705beaed7) | ![Image](https://github.com/user-attachments/assets/15835aac-a22f-4f8c-b846-2de9b1649b86) | ![Image](https://github.com/user-attachments/assets/a96302b0-fad0-4c98-a17b-cf980928497d) |
 
-## Architecture
-
-- Employ MVVM (Model-View-ViewModel) architecture or any modern architecture pattern you are comfortable with.
-- Utilize LiveData, Flow, or another reactive approach to update the UI in response to data changes.
-
-## UI/UX Considerations
-
-- Ensure the app has a clean and responsive UI.
-- Use Material Design components where appropriate.
-
-## Extra Credit (if time permits)
-
-- Add a feature to edit existing tasks.
-- Implement sorting or filtering (e.g., show only incomplete tasks).
-- Write unit tests or UI tests for your code.
+---
